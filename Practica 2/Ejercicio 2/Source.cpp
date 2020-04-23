@@ -28,11 +28,12 @@ host (numeric)
 */
 int main(int argc, char **argv)
 {
+	
 	struct addrinfo hints;
 	struct addrinfo * res;
 
 	// ---------------------------------------------------------------------- //
-	// INICIALIZACIÓN SOCKET & BIND //
+	// INICIALIZACIï¿½N SOCKET & BIND //
 	// ---------------------------------------------------------------------- //
 
 	memset(&hints, 0, sizeof(struct addrinfo));
@@ -48,7 +49,7 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	// res contiene la representación como sockaddr de dirección + puerto
+	// res contiene la representaciï¿½n como sockaddr de direcciï¿½n + puerto
 
 	int sd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 
@@ -61,7 +62,7 @@ int main(int argc, char **argv)
 	freeaddrinfo(res);
 
 	// ---------------------------------------------------------------------- //
-	// RECEPCIÓN MENSAJE DE CLIENTE //
+	// RECEPCIï¿½N MENSAJE DE CLIENTE //
 	// ---------------------------------------------------------------------- //
 	char buffer[80];
 	char host[NI_MAXHOST];
