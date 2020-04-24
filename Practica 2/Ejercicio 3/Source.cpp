@@ -32,6 +32,7 @@ int main(int argc, char **argv)
 	struct addrinfo hints;
 	struct addrinfo * res;
 
+	char buffer[80];
 	// ---------------------------------------------------------------------- //
 	// INICIALIZACI�N SOCKET & BIND //
 	// ---------------------------------------------------------------------- //
@@ -49,71 +50,25 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
+
+	struct sockaddr client_addr;
+	socklen_t client_len = sizeof(struct sockaddr);
+
 	// res contiene la representaci�n como sockaddr de direcci�n + puerto
 
 	int sd = socket(res->ai_family, res->ai_socktype, 0);
 
-	if (bind(sd, res->ai_addr, res->ai_addrlen) != 0)
-	{
-		std::cerr << "bind: " << std::endl;
-		return -1;
-	}
+	sendto(sd, argv[3], sizeof(argv[3]), 0, res->ai_addr, res->ai_addrlen);
+
+	ssize_t bytes = recvfrom(sd,(void*)buffer, 79 * sizeof(char), 0, res->ai_addr,
+		&res->ai_addrlen);
+
+	buffer[bytes]='\0';
+	
+	std::cout<<buffer<<std::endl;
+
+
 	freeaddrinfo(res);
-
-	// ---------------------------------------------------------------------- //
-	// RECEPCI�N MENSAJE DE CLIENTE //
-	// ---------------------------------------------------------------------- //
-
-	bool running = true;
-
-
-	while (running)
-	{
-		char buffer[80];
-		char host[NI_MAXHOST];
-		char service[NI_MAXSERV];
-
-		struct sockaddr client_addr;
-		socklen_t client_len = sizeof(struct sockaddr);
-
-		ssize_t bytes = recvfrom(sd, buffer, 79 * sizeof(char), 0, &client_addr,
-		&client_len);
-
-		getnameinfo(&client_addr, client_len, host, NI_MAXHOST, service,
-		NI_MAXSERV, NI_NUMERICHOST | NI_NUMERICSERV);
-
-		time_t t = time(0);
-
-		struct tm* tiempo;
-
-		char bufferT [9];
-
-		if(buffer[0]=='t')
-		{
-			tiempo=localtime(&t);
-			strftime(bufferT,sizeof(bufferT),"%T",tiempo);
-			// ---------------------------------------------------------------------- //
-			// RESPUESTA AL CLIENTE //
-			// ---------------------------------------------------------------------- //
-			sendto(sd, buffer, bytes, 0, &client_addr, client_len);
-		}
-		else if (buffer[0]=='d')
-		{
-			tiempo=localtime(&t);
-			strftime(bufferT,sizeof(bufferT),"%D",tiempo);
-			// ---------------------------------------------------------------------- //
-			// RESPUESTA AL CLIENTE //
-			// ---------------------------------------------------------------------- //
-			sendto(sd, buffer, bytes, 0, &client_addr, client_len);
-		}
-		else if(buffer[0]=='q')
-		{
-			running=false;	
-		}
-
-		std::cout << "IP: " << host << " PUERTO: " << service
-		<< "MENSAJE: " << buffer << std::endl;
-	}
 	
 
 	return 0;
