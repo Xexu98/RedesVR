@@ -12,6 +12,8 @@
 
 int main(int argc, char **argv)
 {
+
+char buffer [80];	
 struct addrinfo hints;
 struct addrinfo * res;
 
