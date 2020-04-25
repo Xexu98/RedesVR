@@ -53,11 +53,8 @@ int main(int argc, char **argv)
 
 	int sd = socket(res->ai_family, res->ai_socktype, 0);
 
-	if (bind(sd, res->ai_addr, res->ai_addrlen) != 0)
-	{
-		std::cerr << "bind: " << std::endl;
-		return -1;
-	}
+	bind(sd, res->ai_addr, res->ai_addrlen);
+	
 	freeaddrinfo(res);
 
 	// ---------------------------------------------------------------------- //
