@@ -32,50 +32,25 @@ std::cerr << "getaddrinfo: " << gai_strerror(rc) << std::endl;
 return -1;
 }
 
+struct sockaddr client_addr;
+socklen_t client_len = sizeof(struct sockaddr);
+
 // res contiene la representación como sockaddr de dirección + puerto
 
 int sd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 
-bind(sd, res->ai_addr, res->ai_addrlen);
+int server = connect(sd,res->ai_addr,res->ai_addrlen);
 
+sendto(sd, argv[3],sizeof(argv[3]), 0,res->ai_addr,res->ai_addrlen);
+
+ssize_t bytes = recvfrom(sd,(void*)buffer, 79 * sizeof(char), 0, res->ai_addr,
+		&res->ai_addrlen);
+
+buffer[bytes]='\0';
+
+std::cout<<buffer<<std::endl;
 
 freeaddrinfo(res);
 
-// ---------------------------------------------------------------------- //
-// PUBLICAR EL SERVIDOR (LISTEN) //
-// ---------------------------------------------------------------------- //
-listen(sd, 16);
-
-// ---------------------------------------------------------------------- //
-// GESTION DE LAS CONEXIONES AL SERVIDOR //
-// ---------------------------------------------------------------------- //
-
-while (true)
-{
-   
-    char host[NI_MAXHOST];
-    char service[NI_MAXSERV];
-    char buffer[80];
-
-    struct sockaddr client_addr;
-    socklen_t client_len = sizeof(struct sockaddr);
-
-    int sd_client = accept(sd, &client_addr, &client_len);
-
-    getnameinfo(&client_addr, client_len, host, NI_MAXHOST, service,
-    NI_MAXSERV, NI_NUMERICHOST | NI_NUMERICSERV);
-
-    std::cout << "CONEXION DESDE IP: " << host << " PUERTO: " << service
-    << std::endl;
-
-    while (true)
-    {
-       ssize_t bytes = recv(sd_client, (void *) buffer, sizeof(char)*79, 0);
-       if(buffer[0] == 'q' && bytes <= 1 || bytes <= 0)break;
-       buffer[bytes]='\0';
-       sendto(sd_client, buffer,bytes, 0,&client_addr,client_len);
-    }
-    
-}
 return 0;
 }

@@ -75,7 +75,7 @@ while (true)
        buffer[bytes]='\0';
        sendto(sd_client, buffer,bytes, 0,&client_addr,client_len);
     }
-    
+    std::cout << "CONEXION FINISHED " << std::endl;
 }
 return 0;
 }
