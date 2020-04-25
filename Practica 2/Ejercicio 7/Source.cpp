@@ -7,69 +7,75 @@
 #include <iostream>
 
 /*
-argv[0] ---> nombre del programa
-argv[1] ---> primer argumento (char *)
-
-./addrinfo www.ucm.es 80
-argv[0] = "./addrinfo"
-argv[1] = "www.ucm.es"
-argv[2] = "80"
-|
-|
-V
-res->ai_addr ---> (socket + bind)
-|
-|
-V
-host (numeric)
-
-./addrinfo 127.0.0.1 80
-./addrinfo www.ucm.es http
+./tcp 0.0.0.0 7777
 */
+
 int main(int argc, char **argv)
 {
-	
-	struct addrinfo hints;
-	struct addrinfo * res;
+struct addrinfo hints;
+struct addrinfo * res;
 
-	char buffer[80];
-	// ---------------------------------------------------------------------- //
-	// INICIALIZACI�N SOCKET & BIND //
-	// ---------------------------------------------------------------------- //
+// ---------------------------------------------------------------------- //
+// INICIALIZACIÓN SOCKET & BIND //
+// ---------------------------------------------------------------------- //
 
-	memset(&hints, 0, sizeof(struct addrinfo));
+memset(&hints, 0, sizeof(struct addrinfo));
 
-	hints.ai_family = AF_INET;
-	hints.ai_socktype = SOCK_DGRAM;
+hints.ai_family = AF_INET;
+hints.ai_socktype = SOCK_STREAM;
 
-	int rc = getaddrinfo(argv[1], argv[2], &hints, &res);
+int rc = getaddrinfo(argv[1], argv[2], &hints, &res);
 
-	if (rc != 0)
-	{
-		std::cerr << "getaddrinfo: " << gai_strerror(rc) << std::endl;
-		return -1;
-	}
+if ( rc != 0 )
+{
+std::cerr << "getaddrinfo: " << gai_strerror(rc) << std::endl;
+return -1;
+}
 
+// res contiene la representación como sockaddr de dirección + puerto
 
-	struct sockaddr client_addr;
-	socklen_t client_len = sizeof(struct sockaddr);
+int sd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 
-	// res contiene la representaci�n como sockaddr de direcci�n + puerto
-
-	int sd = socket(res->ai_family, res->ai_socktype, 0);
-
-	sendto(sd, argv[3], sizeof(argv[3]), 0, res->ai_addr, res->ai_addrlen);
-
-	ssize_t bytes = recvfrom(sd,(void*)buffer, 79 * sizeof(char), 0, res->ai_addr,
-		&res->ai_addrlen);
-
-	buffer[bytes]='\0';
-	
-	std::cout<<buffer<<std::endl;
+bind(sd, res->ai_addr, res->ai_addrlen);
 
 
-	freeaddrinfo(res);
-	
+freeaddrinfo(res);
 
-	return 0;
+// ---------------------------------------------------------------------- //
+// PUBLICAR EL SERVIDOR (LISTEN) //
+// ---------------------------------------------------------------------- //
+listen(sd, 16);
+
+// ---------------------------------------------------------------------- //
+// GESTION DE LAS CONEXIONES AL SERVIDOR //
+// ---------------------------------------------------------------------- //
+
+while (true)
+{
+   
+    char host[NI_MAXHOST];
+    char service[NI_MAXSERV];
+    char buffer[80];
+
+    struct sockaddr client_addr;
+    socklen_t client_len = sizeof(struct sockaddr);
+
+    int sd_client = accept(sd, &client_addr, &client_len);
+
+    getnameinfo(&client_addr, client_len, host, NI_MAXHOST, service,
+    NI_MAXSERV, NI_NUMERICHOST | NI_NUMERICSERV);
+
+    std::cout << "CONEXION DESDE IP: " << host << " PUERTO: " << service
+    << std::endl;
+
+    while (true)
+    {
+       ssize_t bytes = recv(sd_client, (void *) buffer, sizeof(char)*79, 0);
+       if(buffer[0] == 'q' && bytes <= 1 || bytes <= 0)break;
+       buffer[bytes]='\0';
+       sendto(sd_client, buffer,bytes, 0,&client_addr,client_len);
+    }
+    std::cout << "CONEXION FINISHED " << std::endl;
+}
+return 0;
 }
