@@ -5,10 +5,54 @@
 #include <unistd.h>
 
 #include <iostream>
-
+#include <pthread.h>
 /*
 ./tcp 0.0.0.0 7777
 */
+
+
+
+
+class MessageThread
+{
+private:
+
+    char buffer[80];
+    ssize_t bytes;
+    int sd_client;
+
+public:
+
+    MessageThread(int sd):sd_client(sd){}
+    
+    void do_message()
+    {
+        while (true)
+        {
+            struct sockaddr client_addr;
+            socklen_t client_len = sizeof(struct sockaddr);
+            bytes = recv(sd_client, (void *) buffer, sizeof(char)*79, 0);
+
+            if (bytes <= 0)
+            {
+                break;
+            }
+            
+
+            sendto(sd_client, buffer,bytes, 0,&client_addr,client_len);
+        }
+          std::cout << "CONEXION FINISHED " << std::endl;
+    }
+    
+
+};
+extern "C" void* _do_message(void* mt_)
+{
+    MessageThread* ct = static_cast<MessageThread*>(mt_);
+    mt_->do_message();
+    delete mt_;
+    return 0;
+}
 
 int main(int argc, char **argv)
 {
@@ -49,13 +93,11 @@ listen(sd, 16);
 // ---------------------------------------------------------------------- //
 // GESTION DE LAS CONEXIONES AL SERVIDOR //
 // ---------------------------------------------------------------------- //
-
 while (true)
 {
    
     char host[NI_MAXHOST];
     char service[NI_MAXSERV];
-    char buffer[80];
 
     struct sockaddr client_addr;
     socklen_t client_len = sizeof(struct sockaddr);
@@ -68,14 +110,12 @@ while (true)
     std::cout << "CONEXION DESDE IP: " << host << " PUERTO: " << service
     << std::endl;
 
-    while (true)
-    {
-       ssize_t bytes = recv(sd_client, (void *) buffer, sizeof(char)*79, 0);
-       if(buffer[0] == 'q' && bytes <= 1 || bytes <= 0)break;
-       buffer[bytes]='\0';
-       sendto(sd_client, buffer,bytes, 0,&client_addr,client_len);
-    }
-    std::cout << "CONEXION FINISHED " << std::endl;
+    MessageThread* mt = new MessageThread(sd_client);
+    pthread_attr_t attr;
+    pthread_attr_init (&attr);
+    pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);
+    pthread_t thread;
+    pthread_create(&thread,& attr,_do_message,mt);
 }
 return 0;
 }

@@ -5,7 +5,7 @@
 #include <unistd.h>
 
 #include <iostream>
-
+#include <pthread.h>
 /*
 argv[0] ---> nombre del programa
 argv[1] ---> primer argumento (char *)
@@ -26,6 +26,29 @@ host (numeric)
 ./addrinfo 127.0.0.1 80
 ./addrinfo www.ucm.es http
 */
+
+//Var globales
+pthread_mutex_t mutext= PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t condt= PTHREAD_COND_INITIALIZER;
+bool finish =false;
+
+
+class MessageThread
+{
+public:
+    MessageThread()
+    
+    void do_message()
+    {
+        
+    }
+    
+private:
+  
+};
+
+
+
 int main(int argc, char **argv)
 {
 	
@@ -36,7 +59,7 @@ int main(int argc, char **argv)
 	// INICIALIZACI�N SOCKET & BIND //
 	// ---------------------------------------------------------------------- //
 
-	memset(&hints, 0, sizeof(struct addrinfo));
+	memset((void*)&hints, 0, sizeof(struct addrinfo));
 
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_DGRAM;
@@ -57,6 +80,20 @@ int main(int argc, char **argv)
 	
 	freeaddrinfo(res);
 
+
+
+    for (int i = 0; i < 5; i++)
+    {
+        
+    }
+
+    pthread_mutex_lock(&mutext);
+    while (!finish)
+    {
+       pthread_cond_wait(&condt,&mutext);
+    }
+    pthread_mutex_unlock(&mutext);
+    return 0;
 	// ---------------------------------------------------------------------- //
 	// RECEPCI�N MENSAJE DE CLIENTE //
 	// ---------------------------------------------------------------------- //
@@ -112,6 +149,4 @@ int main(int argc, char **argv)
 		<< "MENSAJE: " << buffer << std::endl;
 	}
 	
-
-	return 0;
 }
