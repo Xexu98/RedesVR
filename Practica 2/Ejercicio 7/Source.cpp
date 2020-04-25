@@ -48,7 +48,7 @@ public:
 };
 extern "C" void* _do_message(void* mt_)
 {
-    MessageThread* ct = static_cast<MessageThread*>(mt_);
+    MessageThread* mt = static_cast<MessageThread*>(mt_);
     mt_->do_message();
     delete mt_;
     return 0;
