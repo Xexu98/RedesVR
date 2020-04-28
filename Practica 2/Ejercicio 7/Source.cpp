@@ -46,13 +46,7 @@ public:
     
 
 };
-extern "C" void* _do_message(void* mt_)
-{
-    MessageThread* mt = static_cast<MessageThread*>(mt_);
-    mt_->do_message();
-    delete mt_;
-    return 0;
-}
+
 
 int main(int argc, char **argv)
 {
@@ -115,7 +109,7 @@ while (true)
     pthread_attr_init (&attr);
     pthread_attr_setdetachstate(&attr,PTHREAD_CREATE_DETACHED);
     pthread_t thread;
-    pthread_create(&thread,& attr,_do_message,mt);
+    pthread_create(&thread,& attr,do_message,mt);
 }
 return 0;
 }
