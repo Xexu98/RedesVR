@@ -137,29 +137,46 @@ private:
 
 };
 */
-
-void haz_conexion(int sd_client, int thid)
-{
-	// ---------------------------------------------------------------------- //
-	// GESTION DE LA CONEXION CLIENTE //
-	// ---------------------------------------------------------------------- //
+class ConexionThread {
+private:
 	char buffer[80];
-
-	ssize_t bytes = recv(sd_client, (void *)buffer, sizeof(char) * 79, 0);
-
-	if (bytes <= 0)
+	ssize_t bytes;
+	int sd_client;
+public:
+	ConexionThread(int sd_) :sd(sd_) {}
+	void haz_conexion()
 	{
-		return;
+		// ---------------------------------------------------------------------- //
+		// GESTION DE LA CONEXION CLIENTE //
+		// ---------------------------------------------------------------------- //
+		while (true)
+		{
+			struct sockaddr src_addr;
+			socklen_t addrlen = sizeof(struct sockaddr);
+
+			bytes = recv(sd, (void *)buffer, sizeof(char) * 79, 0);
+
+			if (bytes <= 0)break;
+			buffer[bytes] = '\0';
+
+			std::cout << "THREAD: " << pthread_self() << " MESSAGE: " << buffer << std::endl;
+
+			sendto(sd_cliente, buffer, bytes, 0, &src_addr, addrlen); 
+		}	
+
+		std::cout << "CONEXIÓN TERMINADA" << std::endl;
+
+		}
 	}
-
-	std::cout << "[" << thid << "] MENSAJE: " << buffer << std::endl;
-
-	send(sd_client, (void *)buffer, bytes, 0);
-
-	// FIN CONEXION
-	close(sd_client);
 };
 
+extern "C" void* _haz_conexion(void* ct_)
+{
+	ConnectionThread* ct = static_cast<ConnectionThread*>(ct_);
+	ct->haz_conexion();
+	delete ct;
+	return 0;
+}
 
 int main(int argc, char **argv)
 {
@@ -187,11 +204,8 @@ int main(int argc, char **argv)
 
 	int sd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 
-	if (bind(sd, res->ai_addr, res->ai_addrlen) != 0)
-	{
-		std::cerr << "bind: " << std::endl;
-		return -1;
-	}
+	bind(sd, res->ai_addr, res->ai_addrlen);
+
 
 	freeaddrinfo(res);
 
@@ -203,19 +217,15 @@ int main(int argc, char **argv)
 	// ---------------------------------------------------------------------- //
 	// GESTION DE LAS CONEXIONES AL SERVIDOR //
 	// ---------------------------------------------------------------------- //
-	char host[NI_MAXHOST];
-	char service[NI_MAXSERV];
-
-	int th_id = 0;
-
-	std::vector<std::thread> pool_thread;
-
 	while (true)
 	{
+
+		char host[NI_MAXHOST];
+		char service[NI_MAXSERV];
+
 		struct sockaddr client_addr;
 		socklen_t client_len = sizeof(struct sockaddr);
 
-		// Thread ppal se bloqua en accept
 		int sd_client = accept(sd, &client_addr, &client_len);
 
 		getnameinfo(&client_addr, client_len, host, NI_MAXHOST, service,
@@ -224,11 +234,12 @@ int main(int argc, char **argv)
 		std::cout << "CONEXION DESDE IP: " << host << " PUERTO: " << service
 			<< std::endl;
 
-		//Crear thread para tratar cada conexion
-		std::thread conexionthr(haz_conexion, sd_client, th_id++);
-
-		conexionthr.detach();
+		ConexionThread* ct = new ConexionThread(sd_client);
+		pthread_attr_t attr;
+		pthread_attr_init(&attr);
+		pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+		pthread_t thread;
+		pthread_create(&thread, &attr, _haz_conexion, ct);
 	}
-
 	return 0;
 }

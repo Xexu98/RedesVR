@@ -70,7 +70,7 @@ public:
 
 		}
 	}
-}
+};
 extern "C" void* _haz_mensaje(void* mt_)
 {
 	MessageThread* mt = static_cast<MessageThread*>(mt_);
