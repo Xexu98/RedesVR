@@ -1,3 +1,4 @@
+//////////////////////////////////////////////////////////////////////////////////////////
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -5,61 +6,89 @@
 #include <unistd.h>
 
 #include <iostream>
-#include <pthread.h>
-/*
-argv[0] ---> nombre del programa
-argv[1] ---> primer argumento (char *)
+#include <thread>
+#include <vector>
 
-./addrinfo www.ucm.es 80
-argv[0] = "./addrinfo"
-argv[1] = "www.ucm.es"
-argv[2] = "80"
-|
-|
-V
-res->ai_addr ---> (socket + bind)
-|
-|
-V
-host (numeric)
-
-./addrinfo 127.0.0.1 80
-./addrinfo www.ucm.es http
-*/
-
-//Var globales
-pthread_mutex_t mutext= PTHREAD_MUTEX_INITIALIZER;
-pthread_cond_t condt= PTHREAD_COND_INITIALIZER;
-bool finish =false;
-
-
+static bool finish = false;
+pthread_mutex_t mtxt = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t condt = PTHREAD_COND_INITIALIZER;
 class MessageThread
 {
-public:
-    MessageThread()
-    
-    void do_message()
-    {
-        
-    }
-    
 private:
-  
-};
+	ssize_t bytes;
+	int sd;
+	char buffer[80];
+
+public:
+	MessageThread(int sd_):sd(sd_){}
+	void haz_mensaje()
+	{
+		while (true)
+		{
+			// ---------------------------------------------------------------------- //
+			// RECEPCIÓN MENSAJE DE CLIENTE //
+			// ---------------------------------------------------------------------- //
+		
+			char host[NI_MAXHOST];
+			char service[NI_MAXSERV];
+
+			struct sockaddr client_addr;
+			socklen_t client_len = sizeof(struct sockaddr);
+
+			bytes = recvfrom(sd, buffer, 79 * sizeof(char), 0, &client_addr,
+				&client_len);
+			buffer[bytes] = '\0';
+
+			if (bytes == -1)
+			{
+				std::cerr << "recvfrom: " << std::endl;
+				return;
+			}
+
+			getnameinfo(&client_addr, client_len, host, NI_MAXHOST, service,
+				NI_MAXSERV, NI_NUMERICHOST | NI_NUMERICSERV);
+
+			std::cout << "THREAD: " << pthread_self() << " IP: " << host << " PUERTO: " << service
+				<< "MENSAJE: " << buffer << std::endl;
 
 
+
+			// ---------------------------------------------------------------------- //
+			// RESPUESTA AL CLIENTE //
+			// ---------------------------------------------------------------------- //
+			sendto(sd, buffer, bytes, 0, &client_addr, client_len);
+
+			if (buffer[0] == 'q')
+			{
+				pthread_mutex_lock(&mtxt);
+				finish = true;
+				pthread_cond_signal(&condt);
+				pthread_mutex_unlock(&mtxt);
+
+				break;
+			}
+
+		}
+	}
+}
+extern "C" void* _haz_mensaje(void* mt_)
+{
+	MessageThread* mt = static_cast<MessageThread*>(mt_);
+	mt->haz_mensaje();
+	delete mt;
+	return 0;
+}
 
 int main(int argc, char **argv)
 {
-	
 	struct addrinfo hints;
 	struct addrinfo * res;
 
 	// ---------------------------------------------------------------------- //
-	// INICIALIZACI�N SOCKET & BIND //
+	// INICIALIZACIÓN SOCKET & BIND //
 	// ---------------------------------------------------------------------- //
 
-	memset((void*)&hints, 0, sizeof(struct addrinfo));
+	memset(&hints, 0, sizeof(struct addrinfo));
 
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_DGRAM;
@@ -72,81 +101,30 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	// res contiene la representaci�n como sockaddr de direcci�n + puerto
+	// res contiene la representación como sockaddr de dirección + puerto
 
-	int sd = socket(res->ai_family, res->ai_socktype, 0);
-
+	int sd = socket(res->ai_family, res->ai_socktype, res->ai_protocol);
 	bind(sd, res->ai_addr, res->ai_addrlen);
-	
 	freeaddrinfo(res);
 
-
-
-    for (int i = 0; i < 5; i++)
-    {
-        
-    }
-
-    pthread_mutex_lock(&mutext);
-    while (!finish)
-    {
-       pthread_cond_wait(&condt,&mutext);
-    }
-    pthread_mutex_unlock(&mutext);
-    return 0;
-	// ---------------------------------------------------------------------- //
-	// RECEPCI�N MENSAJE DE CLIENTE //
-	// ---------------------------------------------------------------------- //
-
-	bool running = true;
-
-
-	while (running)
+	// -------------------------------------------------------------------------
+	// POOL DE THREADS
+	// -------------------------------------------------------------------------
+	for (int i = 0; i < 5; ++i)
 	{
-		char buffer[80];
-		char host[NI_MAXHOST];
-		char service[NI_MAXSERV];
-
-		struct sockaddr client_addr;
-		socklen_t client_len = sizeof(struct sockaddr);
-
-		ssize_t bytes = recvfrom(sd, buffer, 79 * sizeof(char), 0, &client_addr,
-		&client_len);
-
-		getnameinfo(&client_addr, client_len, host, NI_MAXHOST, service,
-		NI_MAXSERV, NI_NUMERICHOST | NI_NUMERICSERV);
-
-		time_t t = time(0);
-
-		struct tm* tiempo;
-
-		char bufferT [9];
-
-		if(buffer[0]=='t')
-		{
-			tiempo=localtime(&t);
-			strftime(bufferT,sizeof(bufferT),"%T",tiempo);
-			// ---------------------------------------------------------------------- //
-			// RESPUESTA AL CLIENTE //
-			// ---------------------------------------------------------------------- //
-			sendto(sd, buffer, bytes, 0, &client_addr, client_len);
-		}
-		else if (buffer[0]=='d')
-		{
-			tiempo=localtime(&t);
-			strftime(bufferT,sizeof(bufferT),"%D",tiempo);
-			// ---------------------------------------------------------------------- //
-			// RESPUESTA AL CLIENTE //
-			// ---------------------------------------------------------------------- //
-			sendto(sd, buffer, bytes, 0, &client_addr, client_len);
-		}
-		else if(buffer[0]=='q')
-		{
-			running=false;	
-		}
-
-		std::cout << "IP: " << host << " PUERTO: " << service
-		<< "MENSAJE: " << buffer << std::endl;
+		MessageThread* mt = new MessageThread(sd);
+		pthread_attr_t attrt;
+		pthread_attr_init(&attrt);
+		pthread_attr_setdetachstate(&attrt, PTHREAD_CREATE_DETACHED); 
+		pthread_t thread_id;                                          
+		pthread_create(&thread_id, &attrt, _haz_mensaje, mt);
 	}
-	
+
+	pthread_mutex_lock(&mtxt);
+	while (!finish) { pthread_cond_wait(&condt, &mtxt); }
+	pthread_mutex_unlock(&mtxt);
+
+
+	return 0;
 }
+////////////////////////////////////////////////////////////////////////////////////
