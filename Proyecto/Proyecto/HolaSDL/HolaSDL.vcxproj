@@ -37,6 +37,8 @@
     <ClInclude Include="DemoGC.h" />
     <ClInclude Include="DemoIC.h" />
     <ClInclude Include="GunP2IC.h" />
+    <ClInclude Include="net.h" />
+    <ClInclude Include="net_msgs.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="FighterAsteroidCollision.h" />
     <ClInclude Include="FighterBlackHoleCollision.h" />
@@ -71,6 +73,7 @@
     <ClInclude Include="SDLGame.h" />
     <ClInclude Include="SDLTexturesManager.h" />
     <ClInclude Include="sdl_includes.h" />
+    <ClInclude Include="server.h" />
     <ClInclude Include="ServiceLocator.h" />
     <ClInclude Include="ShowUpAtOppositeSidePC.h" />
     <ClInclude Include="SRandBasedGenerator.h" />
@@ -109,6 +112,8 @@
     <ClCompile Include="DemoGC.cpp" />
     <ClCompile Include="DemoIC.cpp" />
     <ClCompile Include="GunP2IC.cpp" />
+    <ClCompile Include="net.cpp" />
+    <ClCompile Include="net_msgs.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="FighterAsteroidCollision.cpp" />
     <ClCompile Include="FighterBlackHoleCollision.cpp" />
@@ -141,6 +146,7 @@
     <ClCompile Include="SDLFontsManager.cpp" />
     <ClCompile Include="SDLGame.cpp" />
     <ClCompile Include="SDLTexturesManager.cpp" />
+    <ClCompile Include="server.cpp" />
     <ClCompile Include="ServiceLocator.cpp" />
     <ClCompile Include="ShowUpAtOppositeSidePC.cpp" />
     <ClCompile Include="SRandBasedGenerator.cpp" />

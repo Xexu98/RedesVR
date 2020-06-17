@@ -1,2 +1,94 @@
-﻿  Player2.cpp
-  HolaSDL.vcxproj -> C:\Users\Xexu98\Desktop\Prueba\bin\HolaSDLDebug.exe
+﻿  Asteroid.cpp
+  AsteroidBlackHoleCollision.cpp
+  Asteroids.cpp
+c:\users\xexu98\desktop\uni\redes\redesvr\redesvr\proyecto\proyecto\holasdl\asteroids.cpp(91): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+c:\users\xexu98\desktop\uni\redes\redesvr\redesvr\proyecto\proyecto\holasdl\asteroids.cpp(92): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+c:\users\xexu98\desktop\uni\redes\redesvr\redesvr\proyecto\proyecto\holasdl\asteroids.cpp(105): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+c:\users\xexu98\desktop\uni\redes\redesvr\redesvr\proyecto\proyecto\holasdl\asteroids.cpp(106): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+c:\users\xexu98\desktop\uni\redes\redesvr\redesvr\proyecto\proyecto\holasdl\asteroids.cpp(125): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+c:\users\xexu98\desktop\uni\redes\redesvr\redesvr\proyecto\proyecto\holasdl\asteroids.cpp(129): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+c:\users\xexu98\desktop\uni\redes\redesvr\redesvr\proyecto\proyecto\holasdl\asteroids.cpp(133): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+  AsteroidsGame.cpp
+  AudioManager.cpp
+  BlackHole.cpp
+  BlackHoles.cpp
+c:\users\xexu98\desktop\uni\redes\redesvr\redesvr\proyecto\proyecto\holasdl\blackholes.cpp(71): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+c:\users\xexu98\desktop\uni\redes\redesvr\redesvr\proyecto\proyecto\holasdl\blackholes.cpp(72): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+c:\users\xexu98\desktop\uni\redes\redesvr\redesvr\proyecto\proyecto\holasdl\blackholes.cpp(77): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+c:\users\xexu98\desktop\uni\redes\redesvr\redesvr\proyecto\proyecto\holasdl\blackholes.cpp(78): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+  BlockingQueue.cpp
+  BounceOnBorderPC.cpp
+  BoundingBoxGC.cpp
+c:\users\xexu98\desktop\uni\redes\redesvr\redesvr\proyecto\proyecto\holasdl\boundingboxgc.cpp(41): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+c:\users\xexu98\desktop\uni\redes\redesvr\redesvr\proyecto\proyecto\holasdl\boundingboxgc.cpp(42): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+c:\users\xexu98\desktop\uni\redes\redesvr\redesvr\proyecto\proyecto\holasdl\boundingboxgc.cpp(43): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+c:\users\xexu98\desktop\uni\redes\redesvr\redesvr\proyecto\proyecto\holasdl\boundingboxgc.cpp(44): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+c:\users\xexu98\desktop\uni\redes\redesvr\redesvr\proyecto\proyecto\holasdl\boundingboxgc.cpp(57): warning C4244: 'argumento': conversión de 'double' a 'int'; posible pérdida de datos
+  Bullet.cpp
+  BulletBlackHoleCollision.cpp
+  BulletP2.cpp
+  BulletPlayer2Collision.cpp
+  Bullets.cpp
+  BulletsAsteroidsCollision.cpp
+  BulletsP2.cpp
+  BulletsP2PlayerCollision.cpp
+  Collisions.cpp
+  Component.cpp
+  Generando código...
+  Compilando...
+  Container.cpp
+  DeactivateOnBorderExit.cpp
+  DemoContainer.cpp
+  DemoGC.cpp
+  DemoIC.cpp
+  GunP2IC.cpp
+  Player.cpp
+  FighterAsteroidCollision.cpp
+  FighterBlackHoleCollision.cpp
+  Font.cpp
+  FontsManager.cpp
+  GameCrtlIC.cpp
+  GameManager.cpp
+  GameObject.cpp
+  GameObjectPool.cpp
+  GameStatusViewGC.cpp
+  GraphicsComponent.cpp
+  GunIC.cpp
+  ImageGC.cpp
+  InputComponent.cpp
+  Generando código...
+  Compilando...
+  InputHandler.cpp
+  LivesViewerGC.cpp
+  Logger.cpp
+  main.cpp
+  NaturalMovePC.cpp
+  Observer.cpp
+  PhysicsComponent.cpp
+  Player2.cpp
+  RandomNumberGenerator.cpp
+  ReduceSpeedPC.cpp
+  Resources.cpp
+  RotatingPC.cpp
+  RotationIC.cpp
+c:\users\xexu98\desktop\uni\redes\redesvr\redesvr\proyecto\proyecto\holasdl\rotationic.cpp(19): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+  ScoreViewerGC.cpp
+  SDLAudioManager.cpp
+  SDLFontsManager.cpp
+  SDLGame.cpp
+  SDLTexturesManager.cpp
+  ServiceLocator.cpp
+  ShowUpAtOppositeSidePC.cpp
+  Generando código...
+  Compilando...
+  SRandBasedGenerator.cpp
+c:\users\xexu98\desktop\uni\redes\redesvr\redesvr\proyecto\proyecto\holasdl\srandbasedgenerator.cpp(10): warning C4244: 'argumento': conversión de 'time_t' a 'unsigned int'; posible pérdida de datos
+  StopOnBordersPC.cpp
+  Texture.cpp
+  TexturesManager.cpp
+  ThrustIC.cpp
+  ThrustICP2.cpp
+  Vector2D.cpp
+  Worker.cpp
+  Generando código...
+  HolaSDL.vcxproj -> C:\Users\Xexu98\Desktop\Uni\Redes\RedesVR\RedesVR\Proyecto\Proyecto\bin\HolaSDLDebug.exe
