@@ -8,6 +8,26 @@
 #include "ShowUpAtOppositeSidePC.h"
 #include "GunIC.h"
 #include "Vector2D.h"	
+#include "core.h"
+
+
+struct Player_Input
+{
+	bool32 up, down, left, right, jump;
+	float32 pitch;
+	float32 yaw;
+};
+
+struct Player_Snapshot_State
+{
+	Vector2D position;
+	float32 pitch;
+	float32 yaw;
+};
+struct Player_Extra_State
+{
+	Vector2D velocity;
+};
 
 class Player: public Container
 {

@@ -1,13 +1,15 @@
 #pragma once
 
 #include <iostream>
-
+#include "core.h"
 using namespace std;
 
 class Vector2D {
 	double x_;  // first coordinate
 	double y_;  // second coordinate
 public:
+	float32 xf=x_;  // first coordinate
+	float32 yf=y_;  // second coordinate
 	Vector2D();
 	Vector2D(const Vector2D &v);
 	Vector2D(double x, double y);

@@ -32,6 +32,7 @@
     <ClInclude Include="Collisions.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="Container.h" />
+    <ClInclude Include="core.h" />
     <ClInclude Include="DeactivateOnBorderExit.h" />
     <ClInclude Include="DemoContainer.h" />
     <ClInclude Include="DemoGC.h" />
@@ -107,6 +108,7 @@
     <ClCompile Include="Collisions.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Container.cpp" />
+    <ClCompile Include="core.cpp" />
     <ClCompile Include="DeactivateOnBorderExit.cpp" />
     <ClCompile Include="DemoContainer.cpp" />
     <ClCompile Include="DemoGC.cpp" />
