@@ -2,8 +2,12 @@
 
 #include <vector>
 
-GameObject::GameObject(SDL_Renderer *renderer, std::string filename, const Vector2D &pos, const Vector2D &rot, const Vector2D &size)
+GameObject::GameObject(SDL_Renderer *renderer, std::string filename, const Vector2 &pos, const Vector2 &rot, const Vector2 &size)
     : Serializable(), position(pos), rotation(rot), area(size), texture(new Texture(renderer, filename)) {}
+
+GameObject::GameObject(GameObject *g) : position(g->position), rotation(g->rotation), area(g->area), texture(g->texture)
+{
+}
 
 GameObject::~GameObject()
 {
@@ -32,7 +36,7 @@ int GameObject::from_bin(char *data)
 {
     try
     {
-        //Reconstruir la clase usando el buffer _data
+       
         position.from_bin(data);
         char *aux = data + position.size();
 
@@ -47,6 +51,7 @@ int GameObject::from_bin(char *data)
     }
     catch (std::exception e)
     {
+        std::cout << "Error al deserializar\n";
         return -1;
     }
 }
@@ -62,40 +67,45 @@ void GameObject::render()
     texture->render(destRect);
 }
 
-Vector2D GameObject::getPosition()
+Vector2 GameObject::getPosition()
 {
     return position;
 }
 
-Vector2D GameObject::getRotation()
+Vector2 GameObject::getRotation()
 {
     return rotation;
 }
 
-Vector2D GameObject::getSize()
+Vector2 GameObject::getSize()
 {
     return area;
 }
 
-void GameObject::setPosition(const Vector2D &pos)
+void GameObject::setPosition(const Vector2 &pos)
 {
     position = pos;
 }
 
-void GameObject::setRotation(const Vector2D &rot)
+void GameObject::setRotation(const Vector2 &rot)
 {
     rotation = rot;
 }
 
-void GameObject::setSize(const Vector2D &s)
+void GameObject::setSize(const Vector2 &s)
 {
     area = s;
 }
 
-bool GameObject::isInside(const Vector2D &pos)
+Texture *GameObject::getTexture()
 {
-    return pos.x > (position.x - area.x) && pos.x < (position.x + area.x) &&
-           pos.y > (position.y - area.y) && pos.y < (position.y + area.y);
+    return texture;
+}
+
+bool GameObject::isInside(const Vector2 &pos)
+{
+    return pos.x > position.x && pos.x < position.x + area.x * texture->getW() &&
+           pos.y > position.y && pos.y < position.y + area.y * texture->getH();
 }
 
 bool GameObject::overlaps(GameObject *other)
@@ -103,14 +113,15 @@ bool GameObject::overlaps(GameObject *other)
     if (other == nullptr)
         return false;
 
-    std::vector<int> x = {-1, 1, -1, 1}, y = {-1, -1, 1, 1};
+    std::vector<int> x = {0, 1, 0, 1}, y = {0, 0, 1, 1};
     bool inside = false;
     int i = 0;
 
     while (!inside && i < 4)
     {
-        Vector2 aux = {other->getPosition().x + x[i] * other->getSize().x, other->getPosition().y + y[i] * other->getSize().y};
-        inside = isInside({0, 0});
+        Vector2 aux = {other->getPosition().x + x[i] * other->getSize().x * other->getTexture()->getW(), 
+        other->getPosition().y + y[i] * other->getSize().y * other->getTexture()->getH()};
+        inside = isInside(aux);
         i++;
     }
 

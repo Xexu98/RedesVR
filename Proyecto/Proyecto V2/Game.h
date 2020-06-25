@@ -2,10 +2,13 @@
 #define GAME_H
 
 #include <SDL2/SDL.h>
+
 #include <vector>
+#include <map>
 
 #include "GameObject.h"
 
+class Track;
 class Player;
 
 const int N_LANES = 5;
@@ -18,14 +21,10 @@ private:
     double startY;
     double endY;
 
-    std::vector<double> startX;
-
-    std::vector<Player *> players;
+   
 
     int nPlayers;
     int winner;
-
-    std::string playerFilename;
 
     SDL_Renderer *renderer;
 
@@ -40,15 +39,13 @@ public:
     void start();
     void update(double deltaTime);
     void render();
-    void handleInput(const std::vector<Input>);
+    void handleInput(int i, Input input);
 
     bool collisionWithObstacle(GameObject *obj);
-    
+    bool raceEnded();
 
     void removeTrack(Track *track);
-    void removePlayer(Player *player);
-
-    void clearPlayers();
+    void clearTracks();
 };
 
 #endif
