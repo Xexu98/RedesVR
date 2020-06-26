@@ -4,31 +4,31 @@
 
 #include <algorithm>
 
-Game::Game() : Serializable(), tracks(std::vector<Map *>()),
+Game::Game() : Serializable(), maps(std::vector<Map *>()),
                winner(0), nPlayers(2), renderer(nullptr), startY(INITIAL_RESOLUTION_Y - 100)
 {
     Map::setObstaclesPosition(INITIAL_RESOLUTION_X / nPlayers, startY - 50);
     start();
 }
 
-Game::Game(SDL_Renderer *r) : Serializable(), tracks(std::vector<Map *>()),
+Game::Game(SDL_Renderer *r) : Serializable(), maps(std::vector<Map *>()),
                               winner(0), nPlayers(2), renderer(r), startY(INITIAL_RESOLUTION_Y - 100) {}
 
 Game::~Game()
 {
-    clearTracks();
+    clearMaps();
 }
 
 void Game::to_bin()
 {
     int dataSize = 0;
 
-    for (Map *track : tracks)
+    for (Map *map : maps)
     {
-        if (track != nullptr)
+        if (map != nullptr)
         {
-            track->to_bin();
-            dataSize += track->size();
+			map->to_bin();
+            dataSize += map->size();
         }
     }
 
@@ -36,16 +36,16 @@ void Game::to_bin()
 
     char *aux = _data;
 
-    nPlayers = tracks.size();
+    nPlayers = maps.size();
     memcpy(aux, &nPlayers, sizeof(int));
     aux += sizeof(int);
 
-    for (Map *track : tracks)
+    for (Map *map : maps)
     {
-        if (track != nullptr)
+        if (map != nullptr)
         {
-            memcpy(aux, track->data(), track->size());
-            aux += track->size();
+            memcpy(aux, map->data(), map->size());
+            aux += map->size();
         }
     }
 }
@@ -58,18 +58,18 @@ int Game::from_bin(char *data)
         memcpy(&nPlayers, aux, sizeof(int));
         aux += sizeof(int);
 
-        if (tracks.size() < nPlayers)
-            for (int i = tracks.size(); i < nPlayers; i++)
-                tracks.push_back(new Map(renderer));
+        if (maps.size() < nPlayers)
+            for (int i = maps.size(); i < nPlayers; i++)
+				maps.push_back(new Map(renderer));
 
         //Reconstruir la clase usando el buffer data
         for (int i = 0; i < nPlayers; i++)
         {
-            Map *track = tracks[i];
-            if (track != nullptr)
+            Map *map = maps[i];
+            if (map != nullptr)
             {
-                track->from_bin(aux);
-                aux += track->size();
+				map->from_bin(aux);
+                aux += map->size();
             }
         }
 
@@ -85,59 +85,59 @@ int Game::from_bin(char *data)
 void Game::start()
 {
     for (int i = 0; i < nPlayers; i++)
-        tracks.push_back(new Map(renderer, {i * (double)INITIAL_RESOLUTION_X / (double)nPlayers, startY}, INITIAL_RESOLUTION_X / nPlayers));
+		maps.push_back(new Map(renderer, {i * (double)INITIAL_RESOLUTION_X / (double)nPlayers, startY}, INITIAL_RESOLUTION_X / nPlayers));
 }
 
 void Game::update(double deltaTime)
 {
-    for (Map *track : tracks)
-        if (track != nullptr)
-            track->update(deltaTime);
+    for (Map *map : maps)
+        if (map != nullptr)
+			map->update(deltaTime);
 }
 
 void Game::render()
 {
-    for (Map *track : tracks)
-        if (track != nullptr)
-            track->render();
+    for (Map *map : maps)
+        if (map != nullptr)
+			map->render();
 }
 
 void Game::handleInput(int i, Input input)
 {
-    if (i < tracks.size() && tracks[i] != nullptr)
-        tracks[i]->handleInput(input);
+    if (i < maps.size() && maps[i] != nullptr)
+		maps[i]->handleInput(input);
 }
 
 bool Game::raceEnded()
 {
     int i = 0;
-    while (i < tracks.size() && winner == 0)
+    while (i < maps.size() && winner == 0)
     {
-        winner = (tracks[i] != nullptr && tracks[i]->raceEnded()) ? i+1 : 0;
+        winner = (maps[i] != nullptr && maps[i]->raceEnded()) ? i+1 : 0;
         i++;
     }
 
     return winner != 0;
 }
 
-void Game::removeTrack(Map *track)
+void Game::removeMap(Map *map)
 {
-    auto it = std::find(tracks.begin(), tracks.end(), track);
-    if (it != tracks.end())
+    auto it = std::find(maps.begin(), maps.end(), map);
+    if (it != maps.end())
     {
-        tracks.erase(it);
-        if (track != nullptr)
-            delete track;
+		maps.erase(it);
+        if (map != nullptr)
+            delete map;
     }
 }
 
-void Game::clearTracks()
+void Game::clearMaps()
 {
     //Vector auxiliar para poder borrar referencias
-    std::vector<Map *> aux = tracks;
-    for (Map *track : aux)
-        removeTrack(track);
+    std::vector<Map *> aux = maps;
+    for (Map *map : aux)
+        removeMap(map);
 
     aux.clear();
-    tracks.clear();
+	maps.clear();
 }

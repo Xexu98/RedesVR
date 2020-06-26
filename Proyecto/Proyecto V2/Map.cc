@@ -9,7 +9,7 @@ std::vector<Vector2D> Map::bulletsBasePos = std::vector<Vector2D>();
 double Map::endY = 200;
 
 Map::Map(SDL_Renderer *renderer, const Vector2D &startPos, int width) : bulletFilename("./Assets/whiterect.png"), playerFilename("./Assets/player.png"),
-                                                                           backgroundFilename("./Assets/cs2d.jpg"),
+                                                                           backgroundFilename("./Assets/cs2d.png"),
                                                                            bullets(std::vector<Bullet *>()), startPos(startPos), renderer(renderer)
 {
     offset = width / (N_LANES * 4);
@@ -153,15 +153,6 @@ void Map::update(double deltaTime)
         for (Bullet *bullet : bullets)
             if (bullet != nullptr)
 				bullet->setPosition(bullet->getPosition() + vel * deltaTime);
-
-        if (background != nullptr)
-        {
-            background->setPosition(background->getPosition() + vel * deltaTime);
-            if (background->getPosition().y + 10 >= 0)
-                background->setPosition({background->getPosition().x, -INITIAL_RESOLUTION_Y});
-        }
-
-
     }
     checkCollisions();
 }
@@ -210,8 +201,9 @@ void Map::createBullets()
 {
     for (int i = 0; i < Map::bulletsBasePos.size(); i++)
     {
-        Vector2D pos = Vector2D(startPos.x + offset, 0) + Map::bulletsBasePos[i];
-        bullets.push_back(new GameObject(renderer, bulletFilename, pos, {}, {0.5, 0.5}));        
+		Vector2D dir = player->getRotation();
+        Vector2D pos = player->getPosition() - Vector2D(1 / 2, 5);
+        bullets.push_back(new GameObject(renderer, bulletFilename, pos, {}, {0.1, 0.5}));        
     }
 }
 

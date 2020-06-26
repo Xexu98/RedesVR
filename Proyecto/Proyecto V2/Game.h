@@ -8,7 +8,7 @@
 
 #include "GameObject.h"
 
-class Track;
+class Map;
 class Player;
 
 const int N_LANES = 5;
@@ -22,6 +22,7 @@ private:
     double endY;
 
    
+	std::vector<Map *> maps;
 
     int nPlayers;
     int winner;
@@ -44,8 +45,8 @@ public:
     bool collisionWithObstacle(GameObject *obj);
     bool raceEnded();
 
-    void removeTrack(Track *track);
-    void clearTracks();
+    void removeMap(Map *track);
+    void clearMaps();
 };
 
 #endif

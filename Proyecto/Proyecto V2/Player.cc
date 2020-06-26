@@ -28,16 +28,16 @@ void Player::handleInput(Input input)
 	switch (input)
 	{
 	case LEFT:
-		moveLane(Vector2D(0,-1));
+		move(Vector2D(0,-1));
 		break;
 	case RIGHT:
-		moveLane(Vector2D(0, -1));
+		move(Vector2D(0, -1));
 		break;
 	case UP:
-		moveLane(Vector2D(1, 0));
+		move(Vector2D(1, 0));
 		break;
 	case DOWN:
-		moveLane(Vector2D(-1, 0));
+		move(Vector2D(-1, 0));
 		break;
 	default:
 		break;
