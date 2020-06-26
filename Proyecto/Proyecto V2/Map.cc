@@ -193,7 +193,7 @@ void Map::checkCollisions()
         if (player != nullptr)
             player->lessLife();
 
-        std::cout << "Colision\n";
+        std::cout << "Hit\n";
     }   
 }
 
@@ -212,32 +212,6 @@ bool Map::gameEnded()
     return player->getLife()<=0;
 }
 
-void Map::setBulletsPosition(int width, int posY)
-{
-    if (!Map::bulletsBasePos.empty())
-        return;
-
-    srand((unsigned)time(0));
-    double y = posY;
-
-    while (y > endY)
-    {
-        int lane;
-        int nBulletsInMap = rand() % N_LANES;
-
-        std::vector<bool> obstacleInLane(N_LANES, false);
-        for (int i = 0; i < nBulletsInMap; i++)
-        {
-            do
-            {
-                lane = std::rand() % N_LANES;
-            } while (obstacleInLane[lane]);
-
-			Map::bulletsBasePos.push_back({lane * (double)width / (double)N_LANES, y});
-            y -= (std::rand() % (MAX_O_DIST - MIN_O_DIST)) + MIN_O_DIST;
-        }
-    }
-}
 
 void Map::removeBullet(Bullet *bullet)
 {
