@@ -47,9 +47,9 @@ public:
     void createBullets();
     void checkCollisions();
 
-    static void setBulletsPosition(int width, int posY);
+    
 
-    bool raceEnded();
+    bool gameEnded();
 
     void removeBullet(Bullet *obstacle);
     void clearBullets();

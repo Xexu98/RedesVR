@@ -207,9 +207,9 @@ void Map::createBullets()
     }
 }
 
-bool Map::raceEnded()
+bool Map::gameEnded()
 {
-    return player != nullptr && goal != nullptr && (goal->overlaps(player) || player->overlaps(goal));
+    return player->getLife()<=0;
 }
 
 void Map::setBulletsPosition(int width, int posY)
@@ -239,14 +239,14 @@ void Map::setBulletsPosition(int width, int posY)
     }
 }
 
-void Map::removeBullet(Bullet *obstacle)
+void Map::removeBullet(Bullet *bullet)
 {
     auto it = std::find(bullets.begin(), bullets.end(), obstacle);
     if (it != bullets.end())
     {
 		bullets.erase(it);
-        if (obstacle != nullptr)
-            delete obstacle;
+        if (bullet != nullptr)
+            delete bullet;
     }
 }
 

@@ -68,3 +68,8 @@ double Player::getVelocity() const
 {
 	return velocity;
 }
+
+double Player::getLife()
+{
+	return life;
+}

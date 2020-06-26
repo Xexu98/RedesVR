@@ -27,6 +27,7 @@ public:
 
 	void setVelocity(double v);
 	double getVelocity() const;
+	double getLife();
 };
 
 #endif
